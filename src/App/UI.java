@@ -44,20 +44,34 @@ public class UI {
     }
 
     public static void printBoard(ChessPiece[][] pieces) {
+        printChessBoard(pieces, null);
+    }
+
+    public static void printBoard(ChessPiece[][] pieces, boolean[][] possibleMoves) {
+        printChessBoard(pieces, possibleMoves);
+    }
+
+    private static void printChessBoard(ChessPiece[][] pieces, boolean[][] possibleMoves) {
         for (int i = 0; i < pieces.length; i++) {
             System.out.print((8 - i) + " ");
             for (int j = 0; j < pieces.length; j++) {
-                printPiece(pieces[i][j]);
+                boolean isMovable = possibleMoves != null && possibleMoves[i][j];
+                printPiece(pieces[i][j], isMovable);
             }
             System.out.println();
         }
         System.out.println("  a b c d e f g h");
     }
 
-    private static void printPiece(ChessPiece piece) {
+    private static void printPiece(ChessPiece piece, boolean background) {
+        if (background) {
+            System.out.print(ANSI_BLUE_BACKGROUND);
+        }
+
+        String line = "-" + ANSI_RESET;
         String white = ANSI_WHITE + piece + ANSI_RESET;
         String black = ANSI_YELLOW + piece + ANSI_RESET;
-        System.out.print((piece == null) ? "-" : (piece.getColor() == Color.WHITE) ? white : black);
+        System.out.print((piece == null) ? line : (piece.getColor() == Color.WHITE) ? white : black);
 
         System.out.print(" ");
     }
