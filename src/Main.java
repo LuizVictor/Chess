@@ -15,7 +15,7 @@ public class Main {
         while (true) {
             try {
                 UI.clearScreen();
-                UI.printBoard(chesMatch.getPieces());
+                UI.printMatch(chesMatch);
                 System.out.println();
 
                 System.out.print("Source: ");
