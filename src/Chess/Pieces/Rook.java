@@ -18,31 +18,25 @@ public class Rook extends ChessPiece {
     @Override
     public boolean[][] possibleMoves() {
         boolean[][] matrix = new boolean[getBoard().getRows()][getBoard().getColumns()];
+        int[][] directions = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }; // Up, Down, Left, Right
 
-        makeMove(matrix, -1, 0); // up
-        makeMove(matrix, 1, 0);  // down
-        makeMove(matrix, 0, -1); // left
-        makeMove(matrix, 0, 1);  // right
+        for (int[] direction : directions) {
+            makeMove(matrix, direction[0], direction[1]);
+        }
 
         return matrix;
     }
 
     private void makeMove(boolean[][] matrix, int row, int column) {
-        Position currentPosition = new Position(
-                position.getRow() + row,
-                position.getColumn() + column
-        );
+        Position currentPosition = new Position(position.getRow() + row, position.getColumn() + column);
 
         while (getBoard().positionExists(currentPosition) && !getBoard().thereIsAPiece(currentPosition)) {
             matrix[currentPosition.getRow()][currentPosition.getColumn()] = true;
-            currentPosition.setValues(
-                    currentPosition.getRow() + row,
-                    currentPosition.getColumn() + column
-            );
+            currentPosition.setValues(currentPosition.getRow() + row, currentPosition.getColumn() + column);
         }
 
         if (getBoard().positionExists(currentPosition) && isThereOpponentPiece(currentPosition)) {
-            matrix[currentPosition.getRow()][position.getColumn()] = true;
+            matrix[currentPosition.getRow()][currentPosition.getColumn()] = true;
         }
     }
 }
