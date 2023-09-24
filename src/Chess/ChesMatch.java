@@ -17,6 +17,7 @@ public class ChesMatch {
     private List<Piece> piecesOnTheBoard = new ArrayList<>();
     private List<Piece> capturedPieces = new ArrayList<>();
     private ChessPiece enPassantVulnerable;
+    private ChessPiece promoted;
 
     public ChesMatch() {
         board = new Board(8, 8);
@@ -43,6 +44,10 @@ public class ChesMatch {
 
     public ChessPiece getEnPassantVulnerable() {
         return enPassantVulnerable;
+    }
+
+    public ChessPiece getPromoted() {
+        return promoted;
     }
 
     public ChessPiece[][] getPieces() {
@@ -76,13 +81,52 @@ public class ChesMatch {
 
         ChessPiece movedPiece = (ChessPiece) board.piece(target);
 
+        promoted = null;
+        if (movedPiece instanceof Pawn) {
+            if (
+                    movedPiece.getColor() == Color.WHITE && target.getRow() == 0 ||
+                            movedPiece.getColor() == Color.BLACK && target.getRow() == 7
+            ) {
+                promoted = (ChessPiece) board.piece(target);
+                promoted= replacePromotedPiece("Q");
+            }
+        }
+
         isCheck = testCheck(opponent(currentPlayer));
 
         checkStatus();
-
         checkEnPassant(movedPiece, source, target);
 
         return (ChessPiece) capturedPiece;
+    }
+
+
+    public ChessPiece replacePromotedPiece(String type) {
+        if (promoted == null) {
+            throw new IllegalStateException("There is no piece to be promoted");
+        }
+
+        if (!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("Q")) {
+            return promoted;
+        }
+
+        Position position = promoted.getChesPosition().toPosition();
+        Piece piece = board.removePiece(position);
+        piecesOnTheBoard.remove(piece);
+        ChessPiece newPiece = newPiece(type, promoted.getColor());
+        board.placePiece(newPiece, position);
+        piecesOnTheBoard.add(newPiece);
+
+        return newPiece;
+    }
+
+    private ChessPiece newPiece(String type, Color color) {
+        return switch (type) {
+            case "B" -> new Bishop(board, color);
+            case "N" -> new Knight(board, color);
+            case "R" -> new Rook(board, color);
+            default -> new Queen(board, color);
+        };
     }
 
     private void checkStatus() {
